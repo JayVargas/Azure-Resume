@@ -3,7 +3,7 @@ getVisitCount();
 
 })
 
-const functionApi= '';
+const functionApi = 'http://localhost:7071/api/HttpTrigger1';
 const getVisitCount = () => {
 let count= 30;
 fetch(functionApi).then(response => {
