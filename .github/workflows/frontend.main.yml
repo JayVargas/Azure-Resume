@@ -1,30 +1,37 @@
+# Define the name of the workflow
 name: deploy_frontend
 # Deploys when a push is made from frontend folder
-
+# Trigger the workflow when a push is made to the main branch of the frontend folder
+on:
 on:
     push:
         branches: [ main ]
-  
-
+        paths:
+        - 'frontend/**'
+# Define a job called "build"
 jobs:
   build:
+  # Run the job on the latest version of Ubuntu
     runs-on: ubuntu-latest
     steps:
+     # Checkout the code from GitHub
     - uses: actions/checkout@v3
+    # Log in to Azure using the Azure credentials stored as a secret in the GitHub repository
     - uses: azure/login@v1
       with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
+    # Upload the contents of the frontend folder to blob storage
     - name: Upload to blob storage
       uses: azure/CLI@v1
       with:
-       
+       # Use the Azure CLI to upload the contents of the frontend folder to blob storage
         inlineScript: |
-            az storage blob upload-batch --account-name resumechallengebc62 -d '$web' -s frontend/
+            az storage blob upload-batch --account-name resumechallengebc62 -d '$web' -s frontend/ --overwrite
+   # Purge the content of the CDN endpoint
     - name: Purge CDN endpoint
       uses: azure/CLI@v1
       with:
-    
+        # Use the Azure CLI to purge the content of the CDN endpoint
         inlineScript: |
            az cdn endpoint purge --content-paths  "/*" --profile-name "AzureResumeCDN1" --name "jvcloudresume" --resource-group "resumechallenge"
 
