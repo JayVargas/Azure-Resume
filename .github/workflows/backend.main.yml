@@ -1,0 +1,60 @@
+# Name of the GitHub action
+name: deploy_backend
+
+# Trigger the action when changes are pushed to the repository
+on:
+  push:
+    branches: [Main]
+    paths:
+    - "backend/**"
+
+# Define environment variables used by the action
+env:
+  # Name of the Azure function app to deploy to
+  AZURE_FUNCTIONAPP_NAME: HttpTrigger1 # Set this to your Applications name
+  # Path to the project to be deployed. Defaults to the repository root
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'  # Set this to the name of your web app project, defaults to the repository root
+  # Version of DotNet to be used
+  DOTNET_VERSION: '6.0' # Set this to the dotnet version you used
+
+# Define the main job of the action, which is to build and deploy the DotNet project
+jobs:
+  build-and-deploy:
+    # Specifies the operating system environment in which the job runs
+    runs-on: windows-latest
+    # Define the individual steps that make up the job
+    steps:
+    # Check out the latest version of the repository
+    - name: 'Checkout GitHub action'
+      uses: actions/checkout@v2
+    # Log in to Azure using the Azure credentials stored as a secret in the GitHub repository
+    - uses: azure/login@v1
+      with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}      
+    # Set up the DotNet environment on the Windows machine
+    - name: Setup DotNet ${{ env.DOTNET_VERSION }} Environment
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    # Change the directory to the project directory, build the project, and output the result to the output folder
+    - name: 'Resolve Project Dependencies Using Dotnet'
+      shell: pwsh
+      run: |
+        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/api'
+        dotnet build --configuration Release --output ./output
+        popd
+    - name: 'Run unit test'
+      shell: pwsh
+      run: | 
+        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/tests'
+        dotnet test
+    # Deploy the built project to the Azure function app
+    - name: 'Run Azure Functions action'
+      uses: Azure/functions-action@v1
+      with:
+        # Name of the Azure function app
+        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+        # Path to the package (which was built in the previous step)
+        package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/api/output'
+       
+      
