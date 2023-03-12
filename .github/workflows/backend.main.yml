@@ -28,7 +28,8 @@ jobs:
     - name: 'Checkout GitHub action'
       uses: actions/checkout@v2
     # Log in to Azure using the Azure credentials stored as a secret in the GitHub repository
-    - uses: azure/login@v1
+    - Name: 'Login via Azure CLI'
+      uses: azure/login@v1
       with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}      
     # Set up the DotNet environment on the Windows machine
