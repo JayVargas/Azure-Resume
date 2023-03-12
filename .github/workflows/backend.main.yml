@@ -10,7 +10,7 @@ on:
 # Define environment variables used by the action
 env:
   # Name of the Azure function app to deploy to
-  AZURE_FUNCTIONAPP_NAME: HttpTrigger1 # Set this to your Applications name
+  AZURE_FUNCTIONAPP_NAME: azureresumecount1 # Set this to your Applications name
   # Path to the project to be deployed. Defaults to the repository root
   AZURE_FUNCTIONAPP_PACKAGE_PATH: 'backend'  # Set this to the name of your web app project, defaults to the repository root
   # Version of DotNet to be used
