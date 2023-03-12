@@ -4,9 +4,9 @@ name: deploy_frontend
 # Trigger the workflow when a push is made to the main branch of the frontend folder
 on:
   push:
-  branches: [ main ]
-  paths:
-  - 'frontend/**'
+      branches: [ main ]
+      paths:
+      - 'frontend/**'
 # Define a job called "build"
 jobs:
   build:
